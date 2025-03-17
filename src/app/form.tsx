@@ -1,15 +1,7 @@
 "use client";
 
 import { useState, ChangeEvent, FormEvent } from "react";
-
-// Define types for the form data
-interface FormData {
-  activity: string;
-  price: number;
-  type: string;
-  bookingRequired: boolean;
-  accessibility: number;
-}
+import { FormData } from "./types";
 
 interface FormProps {
   onSubmit: (data: FormData) => void;
@@ -25,6 +17,26 @@ const Form = ({ onSubmit }: FormProps) => {
   });
 
   // Handle input changes
+    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type, checked } = e.target as HTMLInputElement;
+
+    if (type === "checkbox") {
+      setFormData({
+        ...formData,
+        [name]: checked,
+      });
+    } else if (type === "number") {
+      setFormData({
+        ...formData,
+        [name]: name === "price" ? parseFloat(value) : value,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
+  };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -42,17 +54,17 @@ const Form = ({ onSubmit }: FormProps) => {
     <form onSubmit={handleSubmit}>
       <div>
         <label>Activity:
-          <input type="text" name="activity" value={formData.activity} onChange={} required />
+          <input type="text" name="activity" value={formData.activity} onChange={handleChange} required />
         </label>
       </div>
       <div>
         <label>Price:
-          <input type="number" name="price" value={formData.price} onChange={} required min="0" />
+          <input type="number" name="price" value={formData.price} onChange={handleChange} required min="0" />
         </label>
       </div>
       <div>
         <label>Type:
-          <select name="type" value={formData.type} onChange={}>
+          <select name="type" value={formData.type} onChange={handleChange}>
             <option value="education">Education</option>
             <option value="recreational">Recreational</option>
             <option value="social">Social</option>
@@ -67,12 +79,12 @@ const Form = ({ onSubmit }: FormProps) => {
       </div>
       <div>
         <label>Booking Required:
-          <input type="checkbox" name="bookingRequired" checked={formData.bookingRequired} onChange={} />
+          <input type="checkbox" name="bookingRequired" checked={formData.bookingRequired} onChange={handleChange} />
         </label>
       </div>
       <div>
         <label>Accessibility (0.0 - 1.0):
-          <input type="range" name="accessibility" min="0" max="1" step="0.01" value={formData.accessibility} onChange={} />
+          <input type="range" name="accessibility" min="0" max="1" step="0.01" value={formData.accessibility} onChange={handleChange} />
           {formData.accessibility.toFixed(2)}
         </label>
       </div>
